@@ -290,8 +290,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Main Container -->
     <div class="container">
         <!-- Logo -->
         <img src="src/Diseño sin título.png" alt="PlayCity Logo" style="width:300px; height:auto;">
@@ -304,9 +302,7 @@
             <div class="pointer"></div>
             <div class="outer-ring">
                 <div class="middle-ring">
-                    <!-- SVG Wheel gets injected here -->
                     <div class="wheel" id="wheel-svg-container"></div>
-                    <!-- Spin Button -->
                     <div class="center-circle" onclick="spin()"></div>
                 </div>
             </div>
@@ -318,21 +314,33 @@
         </div>
     </div>
 
-    <!-- JavaScript Section -->
     <script>
-        // Prize data with weight for probability logic
+        // Prize data with weights
         const prizes = [
-            { number: 1, color: 'red', prize: 'Bocina Bluetooth', weight: 3 },
-            { number: 2, color: 'black', prize: 'Descuento 10%', weight: 12 },
+            { number: 1, color: 'red', prize: 'Bocina Bluetooth', weight: 15 },
+            { number: 2, color: 'black', prize: 'Descuento 10%', weight: 3 },
             { number: 3, color: 'red', prize: 'Vacaciones', weight: 2 },
-            { number: 4, color: 'black', prize: 'Decuento 5%', weight: 25 },
-            { number: 5, color: 'red', prize: 'Cuponera', weight: 10 },
-            { number: 6, color: 'black', prize: 'Bolsa de Regalo', weight: 6 },
-            { number: 7, color: 'red', prize: 'Termo', weight: 6 },
+            { number: 4, color: 'black', prize: 'Descuento 5%', weight: 4 },
+            { number: 5, color: 'red', prize: 'Cuponera', weight: 18 },
+            { number: 6, color: 'black', prize: 'Bolsa de Regalos', weight: 20 },
+            { number: 7, color: 'red', prize: 'Termo', weight: 25 },
             { number: 8, color: 'black', prize: 'Camioneta SUV', weight: 1 }
         ];
 
-        // Dynamically draw the SVG wheel
+        let isSpinning = false; // Prevent double clicks
+
+        // Utility: weighted random index selector
+        function getWeightedRandomIndex(items) {
+            const totalWeight = items.reduce((acc, item) => acc + item.weight, 0);
+            let random = Math.random() * totalWeight;
+            for (let i = 0; i < items.length; i++) {
+                random -= items[i].weight;
+                if (random <= 0) return i;
+            }
+            return items.length - 1; // fallback
+        }
+
+        // Draw the wheel with SVG
         function createWheel() {
             const size = 420;
             const radius = size / 2;
@@ -344,7 +352,6 @@
                 const startAngle = i * segmentAngle - 90;
                 const endAngle = startAngle + segmentAngle;
 
-                // Calculate arc start and end points
                 const x1 = radius + radius * Math.cos(Math.PI * startAngle / 180);
                 const y1 = radius + radius * Math.sin(Math.PI * startAngle / 180);
                 const x2 = radius + radius * Math.cos(Math.PI * endAngle / 180);
@@ -353,13 +360,11 @@
                 const largeArc = segmentAngle > 180 ? 1 : 0;
                 const color = prize.color === 'red' ? '#DC143C' : '#222';
 
-                // Draw segment
                 svg += `
                     <path d="M${radius},${radius} L${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} Z"
                         fill="${color}" stroke="#8b6508" stroke-width="4"/>
                 `;
 
-                // Position the prize text
                 const textAngle = startAngle + segmentAngle / 2;
                 const textRadius = radius * 0.65;
                 const tx = radius + textRadius * Math.cos(Math.PI * textAngle / 180);
@@ -377,39 +382,42 @@
             wheel.innerHTML = svg;
         }
 
-        // Initial drawing of the wheel
+        // Initialize the wheel
         createWheel();
 
-        // Spin the wheel
+        // Spin logic
         function spin() {
+            if (isSpinning) return;
+            isSpinning = true;
+
             const wheel = document.getElementById('wheel-svg-container');
             const segmentCount = prizes.length;
             const segmentAngle = 360 / segmentCount;
+            const randomIndex = getWeightedRandomIndex(prizes);
 
-            // Randomly select a prize index
-            const randomIndex = Math.floor(Math.random() * segmentCount);
+            const extraSpins = 6;
+            const finalAngle = 360 * extraSpins - randomIndex * segmentAngle - segmentAngle / 2;
 
-            // Add extra spins for animation
-            const extraSpins = 5;
-            const finalAngle = 360 * extraSpins - randomIndex * segmentAngle + segmentAngle / 2;
-
-            // Reset transform
+            // Reset and reflow
             wheel.style.transition = 'none';
-            wheel.style.transform = `rotate(0deg)`;
-            void wheel.offsetWidth; // Force reflow
+            wheel.style.transform = 'rotate(0deg)';
+            void wheel.offsetWidth;
 
-            // Animate spin
-            wheel.style.transition = 'transform 2s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+            // Apply dramatic spin
+            wheel.style.transition = 'transform 5s cubic-bezier(0.05, 0.9, 0.1, 1)';
             wheel.style.transform = `rotate(${finalAngle}deg)`;
 
-            // Display result after animation
+            // Display prize after spin
             setTimeout(() => {
-                document.getElementById('result').textContent = `¡Ganaste: ${prizes[randomIndex - 1].prize}!`;
-                document.getElementById('result').classList.add('win-animation');
+                const resultText = document.getElementById('result');
+                resultText.textContent = `¡Ganaste: ${prizes[randomIndex].prize}!`;
+                resultText.classList.add('win-animation');
+
                 setTimeout(() => {
-                    document.getElementById('result').classList.remove('win-animation');
+                    resultText.classList.remove('win-animation');
+                    isSpinning = false;
                 }, 1000);
-            }, 2000);
+            }, 5000); // match animation duration
         }
     </script>
 </body>
