@@ -115,11 +115,11 @@
         .wheel-segment {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            clip-path: polygon(50% 50%, 0% 0%, 100% 0%);
-            transform-origin: center;
+            left: 50%;
+            width: 50%;
+            height: 50%;
+            transform-origin: 0% 100%;
+            overflow: hidden;
         }
 
         .segment-inner {
@@ -321,7 +321,7 @@
             <div class="pointer"></div>
             <div class="outer-ring">
                 <div class="middle-ring">
-                    <div class="wheel" id="wheel"></div>
+                    <div class="wheel" id="wheel-svg-container"></div>
                     <div class="center-circle" onclick="spin()"></div>
                 </div>
             </div>
@@ -333,112 +333,80 @@
     </div>
 
     <script>
-        const prizes = [
-            // Adjust the weight to change the probability of each prize
-            { number: 1, color: 'red', prize: 'Premio 1', weight: 1 },
-            { number: 2, color: 'black', prize: 'Premio 2', weight: 3 },
-            { number: 3, color: 'red', prize: 'Premio 3', weight: 15 },
-            { number: 4, color: 'black', prize: 'Jackpot', weight: 20 }
-        ];
+const prizes = [
+    { number: 1, color: 'red', prize: 'Bocina Bluetooth', weight: 1 },
+    { number: 2, color: 'black', prize: 'Descuento 10%', weight: 3 },
+    { number: 3, color: 'red', prize: 'Vacaciones', weight: 15 },
+    { number: 4, color: 'black', prize: 'Decuento 5%', weight: 20 },
+    { number: 5, color: 'red', prize: 'Cuponera', weight: 25 },
+    { number: 6, color: 'black', prize: 'Bolsa de Regalo', weight: 20 },
+    { number: 7, color: 'red', prize: 'Termo', weight: 15 },
+    { number: 8, color: 'black', prize: 'Camioneta SUV', weight: 1 }
+];
 
-        let isSpinning = false;
-        let currentRotation = 0;
+function createWheel() {
+    const size = 420;
+    const radius = size / 2;
+    const segmentAngle = 360 / prizes.length;
+    const wheel = document.getElementById('wheel-svg-container');
+    let svg = `<svg id="wheel-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="border-radius:50%;overflow:visible;">`;
 
-        function createWheel() {
-            const wheel = document.getElementById('wheel');
-            wheel.innerHTML = '';
-            const segmentAngle = 360 / prizes.length;
-            
-            prizes.forEach((prize, index) => {
-                const segment = document.createElement('div');
-                segment.className = `wheel-segment segment-${prize.color}`;
-                segment.style.transform = `rotate(${index * segmentAngle}deg)`;
-                
-                const inner = document.createElement('div');
-                inner.className = 'segment-inner';
-                
-                const prizeText = document.createElement('span');
-                prizeText.textContent = prize.prize;
-                
-                const textRotation = (index * segmentAngle) + (segmentAngle / 2);
-                const isBlack = prize.color === 'black';
-                
-                // Base styles for all segments
-                prizeText.style.transformOrigin = 'center';
-                prizeText.style.display = 'inline-block';
-                prizeText.style.width = '100%';
-                prizeText.style.textAlign = 'center';
-                prizeText.style.position = 'absolute';
-                prizeText.style.top = '15%';
-                prizeText.style.left = '0';
-                prizeText.style.transformBox = 'fill-box';
-                
-                // Different rotation and alignment for black segments
-                if (isBlack) {
-                    prizeText.style.transform = `rotate(${textRotation}deg) translateY(0) rotate(${textRotation + 90}deg)`;
-                } else {
-                    // Red segments (mirrored)
-                    prizeText.style.transform = `rotate(${textRotation}deg) translateY(0) rotate(180deg) rotate(${textRotation + 90}deg)`;
-                }
-                
-                inner.appendChild(prizeText);
-                segment.appendChild(inner);
-                wheel.appendChild(segment);
-            });
-        }
+    prizes.forEach((prize, i) => {
+        const startAngle = i * segmentAngle - 90;
+        const endAngle = startAngle + segmentAngle;
+        const x1 = radius + radius * Math.cos(Math.PI * startAngle / 180);
+        const y1 = radius + radius * Math.sin(Math.PI * startAngle / 180);
+        const x2 = radius + radius * Math.cos(Math.PI * endAngle / 180);
+        const y2 = radius + radius * Math.sin(Math.PI * endAngle / 180);
 
-        function getWeightedRandomPrize() {
-            const totalWeight = prizes.reduce((sum, prize) => sum + prize.weight, 0);
-            let random = Math.random() * totalWeight;
-            
-            for (let i = 0; i < prizes.length; i++) {
-                random -= prizes[i].weight;
-                if (random <= 0) {
-                    return i;
-                }
-            }
-            return 0;
-        }
+        const largeArc = segmentAngle > 180 ? 1 : 0;
+        const color = prize.color === 'red' ? '#DC143C' : '#222';
 
-        function spin() {
-            if (isSpinning) return;
+        svg += `
+            <path d="M${radius},${radius} L${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} Z"
+                fill="${color}" stroke="#8b6508" stroke-width="4"/>
+        `;
 
-            isSpinning = true;
-            const result = document.getElementById('result');
-            const wheel = document.getElementById('wheel');
+        // Text position
+        const textAngle = startAngle + segmentAngle / 2;
+        const textRadius = radius * 0.65;
+        const tx = radius + textRadius * Math.cos(Math.PI * textAngle / 180);
+        const ty = radius + textRadius * Math.sin(Math.PI * textAngle / 180);
 
-            result.textContent = 'Spinning...';
-            result.classList.remove('win-animation');
+        svg += `
+            <text x="${tx}" y="${ty}" text-anchor="end" alignment-baseline="middle"
+                fill="#fff" font-size="18" font-family="Georgia" transform="rotate(${textAngle},${tx},${ty})">
+                ${prize.prize}
+            </text>
+        `;
+    });
 
-            const selectedIndex = getWeightedRandomPrize();
-            const segmentAngle = 360 / prizes.length;
-            const prizeAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
+    svg += '</svg>';
+    wheel.innerHTML = svg;
+}
 
-            const spins = 5 + Math.floor(Math.random() * 3);
-            const finalRotation = spins * 360 + (360 - prizeAngle);
-            currentRotation += finalRotation;
+createWheel();
 
-            wheel.style.transform = `rotate(${currentRotation}deg)`;
+function spin() {
+    const wheel = document.getElementById('wheel-svg-container');
+    const segmentCount = prizes.length;
+    const segmentAngle = 360 / segmentCount;
+    const randomIndex = Math.floor(Math.random() * segmentCount);
+    const extraSpins = 5; // number of full spins for animation
+    const finalAngle = 360 * extraSpins - randomIndex * segmentAngle + segmentAngle / 2;
 
-            setTimeout(() => {
-                const prize = prizes[selectedIndex];
-                result.innerHTML = `
-                    <div>
-                        <div style="color: #6b5208; font-size: 16px; margin-bottom: 10px;">¡Felicidades, ganaste!</div>
-                        <div style="color: #b8860b; font-size: 24px; font-weight: bold;">${prize.prize}</div>
-                    </div>
-                `;
-                result.classList.add('win-animation');
+    wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+    wheel.style.transform = `rotate(${finalAngle}deg)`;
 
-                if (prize.prize.toLowerCase().includes('jackpot')) {
-                    // Confetti effect can be added here with a library if desired
-                }
-
-                isSpinning = false;
-            }, 4000);
-        }
-
-        createWheel();
+    // Show result after spin
+    setTimeout(() => {
+        document.getElementById('result').textContent = `¡Ganaste: ${prizes[randomIndex].prize}!`;
+        document.getElementById('result').classList.add('win-animation');
+        setTimeout(() => {
+            document.getElementById('result').classList.remove('win-animation');
+        }, 1000);
+    }, 4000);
+}
     </script>
 </body>
 </html>
