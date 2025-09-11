@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Basic Page Setup -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Roulette</title>
+
+    <!-- Styling for layout, animations, wheel design, buttons, and result display -->
     <style>
+        /* Reset default browser styling */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* Body background and centering */
         body {
             min-height: 100vh;
             background: linear-gradient(135deg, #000000 0%, #0a0a0a 25%, #1a1410 50%, #0a0a0a 75%, #000000 100%);
@@ -23,6 +28,7 @@
             padding: 20px;
         }
 
+        /* Decorative radial light background */
         body::before {
             content: '';
             position: absolute;
@@ -33,6 +39,7 @@
             pointer-events: none;
         }
 
+        /* Centered container for all elements */
         .container {
             text-align: center;
             padding: 20px;
@@ -40,11 +47,13 @@
             max-width: 100%;
         }
 
+        /* Fade-in animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Page Title Style */
         h1 {
             color: transparent;
             background: linear-gradient(135deg, #8b6508, #b8860b, #8b6508, #6b5208);
@@ -57,6 +66,7 @@
             letter-spacing: 3px;
         }
 
+        /* Subtitle (optional) */
         .subtitle {
             color: #8b6508;
             font-size: 1.2rem;
@@ -65,6 +75,7 @@
             opacity: 0.8;
         }
 
+        /* Container for the roulette wheel */
         .roulette-wrapper {
             position: relative;
             width: 100%;
@@ -73,6 +84,7 @@
             margin: 0 auto;
         }
 
+        /* Outer decorative gold ring */
         .outer-ring {
             position: absolute;
             width: 100%;
@@ -86,6 +98,7 @@
                 0 10px 40px rgba(0, 0, 0, 0.8);
         }
 
+        /* Middle black ring */
         .middle-ring {
             position: absolute;
             top: 15px;
@@ -97,6 +110,7 @@
             box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
         }
 
+        /* Wheel container where SVG is injected */
         .wheel {
             position: absolute;
             top: 25px;
@@ -112,6 +126,7 @@
             background: #2a2a2a;
         }
 
+        /* Inner segments (unused since using SVG) */
         .wheel-segment {
             position: absolute;
             top: 0;
@@ -123,9 +138,6 @@
         }
 
         .segment-inner {
-            position: absolute;
-            width: 100%;
-            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -133,17 +145,19 @@
             font-weight: bold;
             color: #ffffff;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-            transform-style: preserve-3d;
         }
 
+        /* Red segment styling */
         .segment-red .segment-inner {
             background: linear-gradient(45deg, #8B0000, #DC143C, #8B0000);
         }
 
+        /* Black segment styling */
         .segment-black .segment-inner {
             background: linear-gradient(45deg, #000000, #2a2a2a, #000000);
         }
 
+        /* Center circle (button to spin the wheel) */
         .center-circle {
             position: absolute;
             top: 50%;
@@ -179,6 +193,7 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
+        /* Arrow/pointer indicating the top of the wheel */
         .pointer {
             position: absolute;
             top: -5px;
@@ -199,8 +214,6 @@
             position: absolute;
             left: -10px;
             top: -35px;
-            width: 0;
-            height: 0;
             border-left: 10px solid transparent;
             border-right: 10px solid transparent;
             border-top: 20px solid #5a4005;
@@ -211,42 +224,7 @@
             50% { transform: translateX(-50%) scale(1.05); }
         }
 
-        .controls {
-            margin-top: 40px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(26, 20, 16, 0.9));
-            border-radius: 15px;
-            border: 2px solid #8b6508;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #8b6508, #5a4005);
-            color: #ffffff;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(139, 101, 8, 0.3);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 101, 8, 0.5);
-            background: linear-gradient(135deg, #b8860b, #8b6508);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
+        /* Result box below the wheel */
         .result {
             margin-top: 30px;
             padding: 20px;
@@ -283,6 +261,7 @@
             z-index: 1;
         }
 
+        /* Result pulse animation on win */
         .win-animation {
             animation: winPulse 1s ease-in-out;
         }
@@ -292,6 +271,7 @@
             50% { transform: scale(1.2); }
         }
 
+        /* Animated gold border */
         .decorative-border {
             position: absolute;
             inset: -20px;
@@ -310,103 +290,127 @@
     </style>
 </head>
 <body>
+
+    <!-- Main Container -->
     <div class="container">
+        <!-- Logo -->
         <img src="src/Diseño sin título.png" alt="PlayCity Logo" style="width:300px; height:auto;">
         <h1>¡Bienvenidos a Octopy!</h1>
         <div style="height: 75px;"></div>
 
-        
+        <!-- Roulette Wheel -->
         <div class="roulette-wrapper">
             <div class="decorative-border"></div>
             <div class="pointer"></div>
             <div class="outer-ring">
                 <div class="middle-ring">
+                    <!-- SVG Wheel gets injected here -->
                     <div class="wheel" id="wheel-svg-container"></div>
+                    <!-- Spin Button -->
                     <div class="center-circle" onclick="spin()"></div>
                 </div>
             </div>
         </div>
 
+        <!-- Prize result display -->
         <div class="result">
             <div class="result-text" id="result">¿Listo para probar su suerte?</div>
         </div>
     </div>
 
+    <!-- JavaScript Section -->
     <script>
-const prizes = [
-    { number: 1, color: 'red', prize: 'Bocina Bluetooth', weight: 1 },
-    { number: 2, color: 'black', prize: 'Descuento 10%', weight: 3 },
-    { number: 3, color: 'red', prize: 'Vacaciones', weight: 15 },
-    { number: 4, color: 'black', prize: 'Decuento 5%', weight: 20 },
-    { number: 5, color: 'red', prize: 'Cuponera', weight: 25 },
-    { number: 6, color: 'black', prize: 'Bolsa de Regalo', weight: 20 },
-    { number: 7, color: 'red', prize: 'Termo', weight: 15 },
-    { number: 8, color: 'black', prize: 'Camioneta SUV', weight: 1 }
-];
+        // Prize data with weight for probability logic
+        const prizes = [
+            { number: 1, color: 'red', prize: 'Bocina Bluetooth', weight: 3 },
+            { number: 2, color: 'black', prize: 'Descuento 10%', weight: 12 },
+            { number: 3, color: 'red', prize: 'Vacaciones', weight: 2 },
+            { number: 4, color: 'black', prize: 'Decuento 5%', weight: 25 },
+            { number: 5, color: 'red', prize: 'Cuponera', weight: 10 },
+            { number: 6, color: 'black', prize: 'Bolsa de Regalo', weight: 6 },
+            { number: 7, color: 'red', prize: 'Termo', weight: 6 },
+            { number: 8, color: 'black', prize: 'Camioneta SUV', weight: 1 }
+        ];
 
-function createWheel() {
-    const size = 420;
-    const radius = size / 2;
-    const segmentAngle = 360 / prizes.length;
-    const wheel = document.getElementById('wheel-svg-container');
-    let svg = `<svg id="wheel-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="border-radius:50%;overflow:visible;">`;
+        // Dynamically draw the SVG wheel
+        function createWheel() {
+            const size = 420;
+            const radius = size / 2;
+            const segmentAngle = 360 / prizes.length;
+            const wheel = document.getElementById('wheel-svg-container');
+            let svg = `<svg id="wheel-svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="border-radius:50%;overflow:visible;">`;
 
-    prizes.forEach((prize, i) => {
-        const startAngle = i * segmentAngle - 90;
-        const endAngle = startAngle + segmentAngle;
-        const x1 = radius + radius * Math.cos(Math.PI * startAngle / 180);
-        const y1 = radius + radius * Math.sin(Math.PI * startAngle / 180);
-        const x2 = radius + radius * Math.cos(Math.PI * endAngle / 180);
-        const y2 = radius + radius * Math.sin(Math.PI * endAngle / 180);
+            prizes.forEach((prize, i) => {
+                const startAngle = i * segmentAngle - 90;
+                const endAngle = startAngle + segmentAngle;
 
-        const largeArc = segmentAngle > 180 ? 1 : 0;
-        const color = prize.color === 'red' ? '#DC143C' : '#222';
+                // Calculate arc start and end points
+                const x1 = radius + radius * Math.cos(Math.PI * startAngle / 180);
+                const y1 = radius + radius * Math.sin(Math.PI * startAngle / 180);
+                const x2 = radius + radius * Math.cos(Math.PI * endAngle / 180);
+                const y2 = radius + radius * Math.sin(Math.PI * endAngle / 180);
 
-        svg += `
-            <path d="M${radius},${radius} L${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} Z"
-                fill="${color}" stroke="#8b6508" stroke-width="4"/>
-        `;
+                const largeArc = segmentAngle > 180 ? 1 : 0;
+                const color = prize.color === 'red' ? '#DC143C' : '#222';
 
-        // Text position
-        const textAngle = startAngle + segmentAngle / 2;
-        const textRadius = radius * 0.65;
-        const tx = radius + textRadius * Math.cos(Math.PI * textAngle / 180);
-        const ty = radius + textRadius * Math.sin(Math.PI * textAngle / 180);
+                // Draw segment
+                svg += `
+                    <path d="M${radius},${radius} L${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} Z"
+                        fill="${color}" stroke="#8b6508" stroke-width="4"/>
+                `;
 
-        svg += `
-            <text x="${tx}" y="${ty}" text-anchor="end" alignment-baseline="middle"
-                fill="#fff" font-size="18" font-family="Georgia" transform="rotate(${textAngle},${tx},${ty})">
-                ${prize.prize}
-            </text>
-        `;
-    });
+                // Position the prize text
+                const textAngle = startAngle + segmentAngle / 2;
+                const textRadius = radius * 0.65;
+                const tx = radius + textRadius * Math.cos(Math.PI * textAngle / 180);
+                const ty = radius + textRadius * Math.sin(Math.PI * textAngle / 180);
 
-    svg += '</svg>';
-    wheel.innerHTML = svg;
-}
+                svg += `
+                    <text x="${tx}" y="${ty}" text-anchor="middle" alignment-baseline="middle"
+                        fill="#fff" font-size="18" font-family="Georgia" transform="rotate(${textAngle},${tx},${ty})">
+                        ${prize.prize}
+                    </text>
+                `;
+            });
 
-createWheel();
+            svg += '</svg>';
+            wheel.innerHTML = svg;
+        }
 
-function spin() {
-    const wheel = document.getElementById('wheel-svg-container');
-    const segmentCount = prizes.length;
-    const segmentAngle = 360 / segmentCount;
-    const randomIndex = Math.floor(Math.random() * segmentCount);
-    const extraSpins = 5; // number of full spins for animation
-    const finalAngle = 360 * extraSpins - randomIndex * segmentAngle + segmentAngle / 2;
+        // Initial drawing of the wheel
+        createWheel();
 
-    wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
-    wheel.style.transform = `rotate(${finalAngle}deg)`;
+        // Spin the wheel
+        function spin() {
+            const wheel = document.getElementById('wheel-svg-container');
+            const segmentCount = prizes.length;
+            const segmentAngle = 360 / segmentCount;
 
-    // Show result after spin
-    setTimeout(() => {
-        document.getElementById('result').textContent = `¡Ganaste: ${prizes[randomIndex].prize}!`;
-        document.getElementById('result').classList.add('win-animation');
-        setTimeout(() => {
-            document.getElementById('result').classList.remove('win-animation');
-        }, 1000);
-    }, 4000);
-}
+            // Randomly select a prize index
+            const randomIndex = Math.floor(Math.random() * segmentCount);
+
+            // Add extra spins for animation
+            const extraSpins = 5;
+            const finalAngle = 360 * extraSpins - randomIndex * segmentAngle + segmentAngle / 2;
+
+            // Reset transform
+            wheel.style.transition = 'none';
+            wheel.style.transform = `rotate(0deg)`;
+            void wheel.offsetWidth; // Force reflow
+
+            // Animate spin
+            wheel.style.transition = 'transform 2s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+            wheel.style.transform = `rotate(${finalAngle}deg)`;
+
+            // Display result after animation
+            setTimeout(() => {
+                document.getElementById('result').textContent = `¡Ganaste: ${prizes[randomIndex - 1].prize}!`;
+                document.getElementById('result').classList.add('win-animation');
+                setTimeout(() => {
+                    document.getElementById('result').classList.remove('win-animation');
+                }, 1000);
+            }, 2000);
+        }
     </script>
 </body>
 </html>
