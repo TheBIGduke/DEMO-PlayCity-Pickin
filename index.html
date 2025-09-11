@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Roulette</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 25%, #1a1410 50%, #0a0a0a 75%, #000000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 101, 8, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(139, 101, 8, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 1s ease;
+            max-width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: transparent;
+            background: linear-gradient(135deg, #8b6508, #b8860b, #8b6508, #6b5208);
+            background-clip: text;
+            -webkit-background-clip: text;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(139, 101, 8, 0.3);
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            color: #8b6508;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .roulette-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 500px;
+            margin: 0 auto;
+        }
+
+        .outer-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b6508, #5a4005, #8b6508, #5a4005);
+            padding: 15px;
+            box-shadow: 
+                0 0 50px rgba(139, 101, 8, 0.2),
+                inset 0 0 20px rgba(0, 0, 0, 0.8),
+                0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .middle-ring {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            background: #1a1410;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+        }
+
+        .wheel {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            bottom: 25px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 
+                inset 0 0 0 2px #8b6508,
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            background: #2a2a2a;
+        }
+
+        .wheel-segment {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(50% 50%, 0% 0%, 100% 0%);
+            transform-origin: center;
+        }
+
+        .segment-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            transform-style: preserve-3d;
+        }
+
+        .segment-red .segment-inner {
+            background: linear-gradient(45deg, #8B0000, #DC143C, #8B0000);
+        }
+
+        .segment-black .segment-inner {
+            background: linear-gradient(45deg, #000000, #2a2a2a, #000000);
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #8b6508, #8b6508);
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 
+                0 0 30px rgba(155, 116, 17, 0.4),
+                0 5px 15px rgba(68, 54, 11, 0.7),
+                inset 0 -3px 5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 3px solid #2a2015;
+        }
+
+        .center-circle:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .center-circle::before {
+            content: 'GIRA';
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #8b6508;
+            z-index: 11;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.7));
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .pointer::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: -35px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 20px solid #5a4005;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        .controls {
+            margin-top: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(26, 20, 16, 0.9));
+            border-radius: 15px;
+            border: 2px solid #8b6508;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #8b6508, #5a4005);
+            color: #ffffff;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(139, 101, 8, 0.3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 101, 8, 0.5);
+            background: linear-gradient(135deg, #b8860b, #8b6508);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(139, 101, 8, 0.1), rgba(0, 0, 0, 0.5));
+            border-radius: 10px;
+            border: 1px solid #8b6508;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(139, 101, 8, 0.1), transparent);
+            animation: slide 3s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .result-text {
+            color: #b8860b;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(139, 101, 8, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .win-animation {
+            animation: winPulse 1s ease-in-out;
+        }
+
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .decorative-border {
+            position: absolute;
+            inset: -20px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, #8b6508, transparent, #8b6508) 1;
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="src/Diseño sin título.png" alt="PlayCity Logo" style="width:300px; height:auto;">
+        <h1>¡Bienvenidos a Octopy!</h1>
+        <div style="height: 75px;"></div>
+
+        
+        <div class="roulette-wrapper">
+            <div class="decorative-border"></div>
+            <div class="pointer"></div>
+            <div class="outer-ring">
+                <div class="middle-ring">
+                    <div class="wheel" id="wheel"></div>
+                    <div class="center-circle" onclick="spin()"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result">
+            <div class="result-text" id="result">¿Listo para probar su suerte?</div>
+        </div>
+    </div>
+
+    <script>
+        const prizes = [
+            // Adjust the weight to change the probability of each prize
+            { number: 1, color: 'red', prize: 'Premio 1', weight: 1 },
+            { number: 2, color: 'black', prize: 'Premio 2', weight: 3 },
+            { number: 3, color: 'red', prize: 'Premio 3', weight: 15 },
+            { number: 4, color: 'black', prize: 'Jackpot', weight: 20 }
+        ];
+
+        let isSpinning = false;
+        let currentRotation = 0;
+
+        function createWheel() {
+            const wheel = document.getElementById('wheel');
+            wheel.innerHTML = '';
+            const segmentAngle = 360 / prizes.length;
+            
+            prizes.forEach((prize, index) => {
+                const segment = document.createElement('div');
+                segment.className = `wheel-segment segment-${prize.color}`;
+                segment.style.transform = `rotate(${index * segmentAngle}deg)`;
+                
+                const inner = document.createElement('div');
+                inner.className = 'segment-inner';
+                
+                const prizeText = document.createElement('span');
+                prizeText.textContent = prize.prize;
+                
+                const textRotation = (index * segmentAngle) + (segmentAngle / 2);
+                const isBlack = prize.color === 'black';
+                
+                // Base styles for all segments
+                prizeText.style.transformOrigin = 'center';
+                prizeText.style.display = 'inline-block';
+                prizeText.style.width = '100%';
+                prizeText.style.textAlign = 'center';
+                prizeText.style.position = 'absolute';
+                prizeText.style.top = '15%';
+                prizeText.style.left = '0';
+                prizeText.style.transformBox = 'fill-box';
+                
+                // Different rotation and alignment for black segments
+                if (isBlack) {
+                    prizeText.style.transform = `rotate(${textRotation}deg) translateY(0) rotate(${textRotation + 90}deg)`;
+                } else {
+                    // Red segments (mirrored)
+                    prizeText.style.transform = `rotate(${textRotation}deg) translateY(0) rotate(180deg) rotate(${textRotation + 90}deg)`;
+                }
+                
+                inner.appendChild(prizeText);
+                segment.appendChild(inner);
+                wheel.appendChild(segment);
+            });
+        }
+
+        function getWeightedRandomPrize() {
+            const totalWeight = prizes.reduce((sum, prize) => sum + prize.weight, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (let i = 0; i < prizes.length; i++) {
+                random -= prizes[i].weight;
+                if (random <= 0) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        function spin() {
+            if (isSpinning) return;
+
+            isSpinning = true;
+            const result = document.getElementById('result');
+            const wheel = document.getElementById('wheel');
+
+            result.textContent = 'Spinning...';
+            result.classList.remove('win-animation');
+
+            const selectedIndex = getWeightedRandomPrize();
+            const segmentAngle = 360 / prizes.length;
+            const prizeAngle = selectedIndex * segmentAngle + (segmentAngle / 2);
+
+            const spins = 5 + Math.floor(Math.random() * 3);
+            const finalRotation = spins * 360 + (360 - prizeAngle);
+            currentRotation += finalRotation;
+
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                const prize = prizes[selectedIndex];
+                result.innerHTML = `
+                    <div>
+                        <div style="color: #6b5208; font-size: 16px; margin-bottom: 10px;">¡Felicidades, ganaste!</div>
+                        <div style="color: #b8860b; font-size: 24px; font-weight: bold;">${prize.prize}</div>
+                    </div>
+                `;
+                result.classList.add('win-animation');
+
+                if (prize.prize.toLowerCase().includes('jackpot')) {
+                    // Confetti effect can be added here with a library if desired
+                }
+
+                isSpinning = false;
+            }, 4000);
+        }
+
+        createWheel();
+    </script>
+</body>
+</html>
