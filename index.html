@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic Page Setup -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Roulette</title>
 
-    <!-- Styling for layout, animations, wheel design, buttons, and result display -->
     <style>
         /* Reset default browser styling */
         * {
@@ -56,12 +54,12 @@
         /* Page Title Style */
         h1 {
             color: transparent;
-            background: linear-gradient(135deg, #8b6508, #b8860b, #8b6508, #6b5208);
+            background: linear-gradient(135deg, #8b660800, #b8870b00, #8b660800, #6b520800);
             background-clip: text;
             -webkit-background-clip: text;
             font-size: 3rem;
             margin-bottom: 10px;
-            text-shadow: 0 0 30px rgba(139, 101, 8, 0.3);
+            text-shadow: 0 0 30px rgba(139, 102, 8, 0);
             font-weight: bold;
             letter-spacing: 3px;
         }
@@ -119,7 +117,7 @@
             bottom: 25px;
             border-radius: 50%;
             overflow: hidden;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            transition: transform 5s cubic-bezier(0.05, 0.9, 0.1, 1);
             box-shadow: 
                 inset 0 0 0 2px #8b6508,
                 inset 0 0 20px rgba(0, 0, 0, 0.5);
@@ -141,7 +139,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: bold;
             color: #ffffff;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
@@ -149,12 +147,12 @@
 
         /* Red segment styling */
         .segment-red .segment-inner {
-            background: linear-gradient(45deg, #8B0000, #DC143C, #8B0000);
+            background: linear-gradient(45deg, #e62741, #e62741, #e62741);
         }
 
         /* Black segment styling */
         .segment-black .segment-inner {
-            background: linear-gradient(45deg, #000000, #2a2a2a, #000000);
+            background: linear-gradient(45deg, #151e32, #151e32, #151e32);
         }
 
         /* Center circle (button to spin the wheel) */
@@ -188,7 +186,7 @@
             content: 'GIRA';
             color: #ffffff;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 15px;
             letter-spacing: 3px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
@@ -252,13 +250,22 @@
             100% { transform: translateX(100%); }
         }
 
-        .result-text {
+        .result-content { 
             color: #b8860b;
             font-size: 24px;
             font-weight: bold;
             text-shadow: 0 0 10px rgba(139, 101, 8, 0.3);
             position: relative;
             z-index: 1;
+            /* Flex properties for content centering */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            /* Added for smooth transition of content */
+            transition: opacity 1s ease-in-out; 
+            opacity: 1;
         }
 
         /* Result pulse animation on win */
@@ -291,12 +298,10 @@
 </head>
 <body>
     <div class="container">
-        <!-- Logo -->
-        <img src="src/Diseño sin título.png" alt="PlayCity Logo" style="width:300px; height:auto;">
-        <h1>¡Bienvenidos a Octopy!</h1>
-        <div style="height: 75px;"></div>
+        <img src="src/Pentafon HR Solutions_Color RB 2.png" alt="Pentafon Logo" style="width:300px; height:auto;">
+        <h1>...........................</h1>
+        <div style="height: 0px;"></div>
 
-        <!-- Roulette Wheel -->
         <div class="roulette-wrapper">
             <div class="decorative-border"></div>
             <div class="pointer"></div>
@@ -308,26 +313,28 @@
             </div>
         </div>
 
-        <!-- Prize result display -->
         <div class="result">
-            <div class="result-text" id="result">¿Listo para probar su suerte?</div>
+            <div class="result-content" id="result-content">
+                <img src="src/LOGO CODIFIN.ai.png" alt="Codifin Logo" style="width:300px; height:auto;" id="codifin-logo">
+            </div>
         </div>
     </div>
 
     <script>
         // Prize data with weights
         const prizes = [
-            { number: 1, color: 'red', prize: 'Bocina Bluetooth', weight: 15 },
-            { number: 2, color: 'black', prize: 'Descuento 10%', weight: 3 },
-            { number: 3, color: 'red', prize: 'Vacaciones', weight: 2 },
-            { number: 4, color: 'black', prize: 'Descuento 5%', weight: 4 },
-            { number: 5, color: 'red', prize: 'Cuponera', weight: 18 },
-            { number: 6, color: 'black', prize: 'Bolsa de Regalos', weight: 20 },
-            { number: 7, color: 'red', prize: 'Termo', weight: 25 },
-            { number: 8, color: 'black', prize: 'Camioneta SUV', weight: 1 }
+            { number: 1, color: 'red', prize: 'IA en Reclutamiento', weight: 15 },
+            { number: 2, color: 'black', prize: 'IA y Productividad', weight: 3 },
+            { number: 3, color: 'red', prize: 'IA Analítica', weight: 2 },
+            { number: 4, color: 'black', prize: 'Soluciones', weight: 4 },
+            { number: 5, color: 'red', prize: 'Tendencias y Futuro', weight: 18 },
+            { number: 6, color: 'black', prize: 'Bienestar y Experiencia', weight: 20 },
         ];
 
         let isSpinning = false; // Prevent double clicks
+        
+        // Define the HTML for the initial state image
+        const initialResultHtml = '<img src="src/LOGO CODIFIN.ai.png" alt="Codifin Logo" style="width:300px; height:auto;" id="codifin-logo">';
 
         // Utility: weighted random index selector
         function getWeightedRandomIndex(items) {
@@ -372,7 +379,7 @@
 
                 svg += `
                     <text x="${tx}" y="${ty}" text-anchor="middle" alignment-baseline="middle"
-                        fill="#fff" font-size="18" font-family="Georgia" transform="rotate(${textAngle},${tx},${ty})">
+                        fill="#fff" font-size="13" font-family="Georgia" transform="rotate(${textAngle},${tx},${ty})">
                         ${prize.prize}
                     </text>
                 `;
@@ -391,6 +398,8 @@
             isSpinning = true;
 
             const wheel = document.getElementById('wheel-svg-container');
+            const resultContent = document.getElementById('result-content');
+            
             const segmentCount = prizes.length;
             const segmentAngle = 360 / segmentCount;
             const randomIndex = getWeightedRandomIndex(prizes);
@@ -403,21 +412,49 @@
             wheel.style.transform = 'rotate(0deg)';
             void wheel.offsetWidth;
 
+            // Clear any previous transition/text before spinning
+            resultContent.style.opacity = 1;
+            resultContent.innerHTML = '<span>¡Mucha Suerte!</span>';
+            resultContent.classList.remove('win-animation');
+            
             // Apply dramatic spin
-            wheel.style.transition = 'transform 5s cubic-bezier(0.05, 0.9, 0.1, 1)';
+            const spinDurationMs = 5000;
+            wheel.style.transition = `transform ${spinDurationMs / 1000}s cubic-bezier(0.05, 0.9, 0.1, 1)`;
             wheel.style.transform = `rotate(${finalAngle}deg)`;
 
-            // Display prize after spin
-            setTimeout(() => {
-                const resultText = document.getElementById('result');
-                resultText.textContent = `¡Ganaste: ${prizes[randomIndex].prize}!`;
-                resultText.classList.add('win-animation');
+            // Display prize after spin duration
+            const winAnimationDurationMs = 1000;
+            const resetDelayMs = 5000;
+            const fadeDurationMs = 1000; // Duration for the fade out/in
 
+            setTimeout(() => {
+                // Announce the prize
+                resultContent.textContent = `¡Ganaste: ${prizes[randomIndex].prize}!`;
+                resultContent.classList.add('win-animation');
+
+                // Remove the pulse animation shortly after it completes
                 setTimeout(() => {
-                    resultText.classList.remove('win-animation');
-                    isSpinning = false;
-                }, 1000);
-            }, 5000); // match animation duration
+                    resultContent.classList.remove('win-animation');
+                }, winAnimationDurationMs);
+                
+                // NEW: Handle smooth reset
+                setTimeout(() => {
+                    // 1. Start fade out
+                    resultContent.style.opacity = 0;
+
+                    setTimeout(() => {
+                        // 2. Change content while invisible
+                        resultContent.innerHTML = initialResultHtml;
+                        
+                        // 3. Start fade in
+                        resultContent.style.opacity = 1;
+                        
+                        isSpinning = false; // Re-enable spinning after the full cycle
+                    }, fadeDurationMs); // Wait for fade out to complete
+
+                }, winAnimationDurationMs + resetDelayMs); // Delay starts after the prize text appears and pulse animation finishes
+                
+            }, spinDurationMs);
         }
     </script>
 </body>
